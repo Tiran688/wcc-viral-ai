@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WCC Viral AI Agent</title>
+<style>
+body{
+font-family:Arial,sans-serif;
+background:#0f172a;
+color:white;
+padding:20px;
+}
+h1{
+text-align:center;
+color:#00e5ff;
+}
+textarea{
+width:100%;
+height:120px;
+border-radius:10px;
+padding:10px;
+font-size:16px;
+}
+button{
+width:100%;
+padding:15px;
+margin-top:15px;
+background:#00c853;
+color:white;
+border:none;
+border-radius:10px;
+font-size:18px;
+cursor:pointer;
+}
+#result{
+margin-top:20px;
+background:#1e293b;
+padding:15px;
+border-radius:10px;
+white-space:pre-wrap;
+}
+</style>
+</head>
+<body>
+
+<h1>🔥 WCC Viral AI Agent</h1>
+
+<p>Enter your topic:</p>
+
+<textarea id="topic" placeholder="Example: Trump and Border Security"></textarea>
+
+<button onclick="generate()">Generate</button>
+
+<div id="result"></div>
+
+<script>
+function generate(){
+
+let topic=document.getElementById("topic").value;
+
+if(topic==""){
+alert("Enter a topic");
+return;
+}
+
+document.getElementById("result").innerHTML=
+"🔥 TITLE\n\n"
++"The Debate Around "+topic+"\n\n"
++"✍️ ENGLISH CAPTION\n\n"
++"People have different opinions on "+topic+". What do you think?\n\n"
++"🇱🇰 SINHALA\n\n"
++topic+" පිළිබඳ ඔබගේ අදහස කුමක්ද?\n\n"
++"#USA #News #Facebook #Trending #WCC";
+}
+</script>
+
+</body>
+</html>
