@@ -74,167 +74,115 @@
 
 <div class="container">
 
-<h1>🚀 WCC Viral AI Agent</h1>
+  <h1>🚀 WCC Viral AI Agent</h1>
 
-<input
-id="apiKey"
-type="password"
-placeholder="Enter Gemini API Key">
+  <input id="apiKey" type="password" placeholder="Enter Gemini API Key">
+  <textarea id="topic" placeholder="Enter Topic (Example: Donald Trump)"></textarea>
 
-<textarea
-id="topic"
-placeholder="Enter Topic (Example: Donald Trump)">
-</textarea>
+  <button id="btn" onclick="generateViralContent()">Generate Viral Content ✨</button>
 
-<button onclick="generateViralContent()">
-Generate Viral Content ✨
-</button>
-
-<div class="card" id="resultCard">
-
-<div class="title">🔥 Viral Title</div>
-<div class="content" id="outTitle"></div>
-
-<br>
-
-<div class="title">✍️ English Caption</div>
-<div class="content" id="outCaption"></div>
-
-<br>
-
-<div class="title">🇱🇰 Sinhala Translation</div>
-<div class="content" id="outSinhala"></div>
-
-<br>
-
-<div class="title">#️⃣ Hashtags</div>
-<div class="content" id="outHashtags"></div>
-
-<br>
-
-<div class="title">🖼️ Image Prompt</div>
-<div class="content" id="outPrompt"></div>
-
-<br>
-
-<div class="title">📌 Pinned Comment</div>
-<div class="content" id="outComment"></div>
-
-<br>
-
-<div class="title">📊 Viral Score</div>
-<div class="content" id="outScore"></div>
-
-</div>
+  <div class="card" id="resultCard">
+    <div class="title">🔥 Viral Title</div>
+    <div class="content" id="outTitle"></div>
+    <br>
+    <div class="title">✍️ English Caption</div>
+    <div class="content" id="outCaption"></div>
+    <br>
+    <div class="title">🇱🇰 Sinhala Translation</div>
+    <div class="content" id="outSinhala"></div>
+    <br>
+    <div class="title">#️⃣ Hashtags</div>
+    <div class="content" id="outHashtags"></div>
+    <br>
+    <div class="title">🖼️ Image Prompt</div>
+    <div class="content" id="outPrompt"></div>
+    <br>
+    <div class="title">📌 Pinned Comment</div>
+    <div class="content" id="outComment"></div>
+    <br>
+    <div class="title">📊 Viral Score</div>
+    <div class="content" id="outScore"></div>
+  </div>
 
 </div>
 
 <script>
-
 async function generateViralContent() {
+  const apiKey = document.getElementById("apiKey").value.trim();
+  const topic = document.getElementById("topic").value.trim();
+  const btn = document.getElementById("btn");
 
-const apiKey =
-document.getElementById("apiKey").value;
+  if(!apiKey){
+    alert("Enter Gemini API Key");
+    return;
+  }
 
-const topic =
-document.getElementById("topic").value;
+  if(!topic){
+    alert("Enter Topic");
+    return;
+  }
 
-if(!apiKey){
-alert("Enter Gemini API Key");
-return;
-}
+  btn.innerText = "Generating... ⏳";
+  btn.disabled = true;
 
-if(!topic){
-alert("Enter Topic");
-return;
-}
-
-const prompt = `
+  const prompt = `
 You are an expert viral Facebook creator.
 
 Generate:
-
 1. Viral Title
 2. English Caption
 3. Sinhala Translation
 4. Viral Hashtags
 5. AI Image Prompt
 6. Pinned Comment
-7. Viral Score
+7. Viral Score (out of 100 with reason)
 
 Topic: ${topic}
 
-Return ONLY JSON.
+Return ONLY valid raw JSON without markdown or code fences like \`\`\`json. Use exactly these keys:
+"title"
+"caption"
+"sinhala"
+"hashtags"
+"imagePrompt"
+"pinnedComment"
+"viralScore"
 `;
 
-try{
+  try {
+    const response = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`,
+      {
+        method:"POST",
+        headers:{ "Content-Type":"application/json" },
+        body:JSON.stringify({
+          contents:[{ parts:[{ text:prompt }] }]
+        })
+      }
+    );
 
-const response = await fetch(
-`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`,
-{
-method:"POST",
-headers:{
-"Content-Type":"application/json"
-},
-body:JSON.stringify({
-contents:[
-{
-parts:[
-{
-text:prompt
+    const data = await response.json();
+    const text = data.candidates[0].content.parts[0].text;
+    const cleanText = text.replace(/```json|```/g, "").trim();
+    const result = JSON.parse(cleanText);
+
+    document.getElementById("outTitle").innerText = result.title || "";
+    document.getElementById("outCaption").innerText = result.caption || "";
+    document.getElementById("outSinhala").innerText = result.sinhala || "";
+    document.getElementById("outHashtags").innerText = result.hashtags || "";
+    document.getElementById("outPrompt").innerText = result.imagePrompt || "";
+    document.getElementById("outComment").innerText = result.pinnedComment || "";
+    document.getElementById("outScore").innerText = result.viralScore || "";
+
+    document.getElementById("resultCard").style.display = "block";
+
+  } catch(error) {
+    alert("Error: " + error.message);
+  } finally {
+    btn.innerText = "Generate Viral Content ✨";
+    btn.disabled = false;
+  }
 }
-]
-}
-]
-})
-}
-);
-
-const data = await response.json();
-
-const text =
-data.candidates[0].content.parts[0].text;
-
-document.getElementById(
-"outTitle"
-).innerText=text;
-
-document.getElementById(
-"outCaption"
-).innerText=text;
-
-document.getElementById(
-"outSinhala"
-).innerText=text;
-
-document.getElementById(
-"outHashtags"
-).innerText=text;
-
-document.getElementById(
-"outPrompt"
-).innerText=text;
-
-document.getElementById(
-"outComment"
-).innerText=text;
-
-document.getElementById(
-"outScore"
-).innerText=text;
-
-document.getElementById(
-"resultCard"
-).style.display="block";
-
-}catch(error){
-
-alert(error);
-
-}
-
-}
-
 </script>
 
 </body>
